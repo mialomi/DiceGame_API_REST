@@ -1,9 +1,11 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,18 +28,22 @@ use App\Models\User;
 });*/
 
 //inicio
-
+Route::controller(UserController::class)->group(function () {
+  Route::post('/login', 'login');     // User login (Admin / Player)
+  Route::post('/register', 'register');    
+});
+/*Route::post('/login', 'login');
 Route::post('register', [UserController::class, 'register'])->name('register');
-Route::post('login', [UserController::class, 'login'])->name('login');
+//Route::post('login', [UserController::class, 'login'])->name('login');*/
 
 //register
-Route:: group([
-    'middleware' => 'auth.api'],
-    function() {
-    
-        Route::get('logout', [UserController::class, 'logout'])->name('logout');
-        Route::get('user', [UserController::class, 'user'])->name('user');
+Route::middleware('auth:api')->group(function () {
+     //  Route::get('user', [UserController::class, 'user'])->name('user');
+     //   Route::get('logout', [UserController::class, 'logout'])->name('logout');
+        
 
     });
+
+
 
 
