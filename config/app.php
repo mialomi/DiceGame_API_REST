@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
+
 return [
 
     /*
@@ -156,11 +157,12 @@ return [
     */
 
     'providers' => ServiceProvider::defaultProviders()->merge([
-        Laravel\Passport\PassportServiceProvider::class,
+        
 
         /*
          * Application Service Providers...
          */
+        Laravel\Passport\PassportServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\PersonalAccessTokenResult;
-use App\Models\User;
-use GuzzleHttp\Psr7\Message;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
+
 
 class UserController extends Controller
 {
@@ -17,24 +19,25 @@ class UserController extends Controller
     public function register(Request $request){
 
         //validamos los datos
-        $user_data = $request->validate ([
+      /*   $user_data = $request->validate ([
             'nickname' => 'nullable|string',
             'email' => 'required|string',
             'password' => 'required|min:8|confirmed',
-        ]);
+        ]); */
 
         //creamos nuevo usuario 
 
         $user = User::create([
-            'nickname' => $user_data['nickname'],
-            'email' => $user_data['email'],
-            'password' =>bcrypt($user_data['password'])
+
+            'nickname' => $request->input('nickname'),
+            'email' =>$request->input('email'),
+            'password' =>bcrypt($request->input('password'))
         ]);
 
-        if (User::create($user)) {
+        if ($user) {
             return response()->json([
                 'message' => 'Successfully created',
-            ], 200);
+            ], 201);
 
         }
 
@@ -43,16 +46,38 @@ class UserController extends Controller
     // user login
     public function login(Request $request){
 
-        $user_login = $request->validate ([
-            'email' => 'required|string',
-            'password' => 'required|string',
+        // validamos datos, establecemos unas rules
 
-        ]);
-        //revisa las credenciales. Si son correctas:
+       /* $rules = [
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+        ];
+        //establecemos mensajes de error concretos
+
+        $errormsg = [
+            'email.email' => 'Enter a valid email',
+            'email.required' => 'Email field is required',
+            'password.required' => 'Password field is required'
+
+        ];
+        // Empezamos la validación
+        $validator = Validator::make($request-> all(), $rules, $errormsg);
+
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator)->withInput();
+
+        }*/
+
+        $user_login = [
+            'email' => $request->input('email'),
+            'password' => $request->input('password'),
+
+        ];
 
         if(Auth::attempt($user_login)) {
 
             $user = Auth::user();
+            /** @var \App\Models\User $user **/
             $token = $user->createToken('user_token')->accessToken;
 
             return response()->json ([
@@ -60,17 +85,19 @@ class UserController extends Controller
                 'message' => 'Successfully logged in',
                 'access_token' => $token,
 
-            ], 200);
-        }
-        
-        //si no son correctas
+            ]);
+         }
+     
+         //si no son correctas
         else {
             return response()->json
             (['message' => 'Invalid login credentials'
             ], 401);
-        }
+        } 
 
     }
 
-
 }
+
+
+
