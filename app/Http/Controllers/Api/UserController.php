@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -18,14 +17,37 @@ class UserController extends Controller
 
     public function register(Request $request){
 
-        //validamos los datos
-      /*   $user_data = $request->validate ([
+     /*   //validamos los datos
+         $user_data = $request->validate ([
             'nickname' => 'nullable|string',
             'email' => 'required|string',
             'password' => 'required|min:8|confirmed',
-        ]); */
+        ]); 
 
-        //creamos nuevo usuario 
+        //creamos nuevo usuario */
+
+        $user_rules = [
+            'nickname' => 'nullable|string',
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ];
+
+        $user_errormsg = [
+            
+            'email.email' => 'This email is already in use',
+            'email.required' => 'Email field is required',
+            'password.required' => 'Password field is required',
+        ];
+
+        $validator = Validator::make($request-> all(), $user_rules, $user_errormsg);
+
+        if ($validator->fails()){
+            return response()->json([
+                'message' => 'Invalid request',
+                'errors' => $validator->errors(),
+    
+            ], 422);
+        }
 
         $user = User::create([
 
@@ -48,9 +70,9 @@ class UserController extends Controller
 
         // validamos datos, establecemos unas rules
 
-       /* $rules = [
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+        $rules = [
+            'email' => 'required|string',
+            'password' => 'required|string',
         ];
         //establecemos mensajes de error concretos
 
@@ -60,14 +82,16 @@ class UserController extends Controller
             'password.required' => 'Password field is required'
 
         ];
-        // Empezamos la validación
+        // valida según las reglas
+
         $validator = Validator::make($request-> all(), $rules, $errormsg);
 
+        //si falla, devuelve un error 
         if($validator->fails()){
             return redirect()->back()->withErrors($validator)->withInput();
 
-        }*/
-
+        }
+        //si sigue, pasamos a autenticar el usuario
         $user_login = [
             'email' => $request->input('email'),
             'password' => $request->input('password'),

@@ -28,17 +28,18 @@ use App\Http\Controllers\Api\UserController;
 });*/
 
 //inicio
-Route::controller(UserController::class)->group(function () {
+/*oute::controller(UserController::class)->group(function () {
   Route::post('/login', 'login');     // User login (Admin / Player)
   Route::post('/register', 'register');    
 });
-/*Route::post('/login', 'login');
+*/
+//Route::post('/login', 'login');
 Route::post('register', [UserController::class, 'register'])->name('register');
-//Route::post('login', [UserController::class, 'login'])->name('login');*/
+Route::post('login', [UserController::class, 'login'])->name('login');
 
 //register
 Route::middleware('auth:api')->group(function () {
-     //  Route::get('user', [UserController::class, 'user'])->name('user');
+       Route::get('user', [UserController::class, 'user'])->name('user');
      //   Route::get('logout', [UserController::class, 'logout'])->name('logout');
         
 
