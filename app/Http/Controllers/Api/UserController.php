@@ -20,14 +20,16 @@ class UserController extends Controller
 
         $user_rules = [
             'nickname' => 'nullable|string|unique:users',
-            'email' => 'required|string',
-            'password' => 'required|string',
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:8',
         ];
 
         $user_errormsg = [
-            
-            'email.required' => 'Email field is required',
+            'email.email' => 'The email field must contain a valid email',
+            'email.required' => 'The email field is required',
+            'password.min' => 'The password is not secure. It must contain a minimum of 8 characters',
             'password.required' => 'Password field is required',
+            
         ];
         //validamos datos introducidos
         $validator = Validator::make($request-> all(), $user_rules, $user_errormsg);
