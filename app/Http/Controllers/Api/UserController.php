@@ -17,17 +17,9 @@ class UserController extends Controller
 
     public function register(Request $request){
 
-     /*   //validamos los datos
-         $user_data = $request->validate ([
-            'nickname' => 'nullable|string',
-            'email' => 'required|string',
-            'password' => 'required|min:8|confirmed',
-        ]); 
-
-        //creamos nuevo usuario */
 
         $user_rules = [
-            'nickname' => 'nullable|string',
+            'nickname' => 'nullable|string|unique:users',
             'email' => 'required|string',
             'password' => 'required|string',
         ];
@@ -38,7 +30,7 @@ class UserController extends Controller
             'email.required' => 'Email field is required',
             'password.required' => 'Password field is required',
         ];
-
+        //validamos datos introducidos
         $validator = Validator::make($request-> all(), $user_rules, $user_errormsg);
 
         if ($validator->fails()){
@@ -49,11 +41,15 @@ class UserController extends Controller
             ], 422);
         }
 
+       // Si el nickname queda vacío, asignamos el valor anonymous con el operador de fusión null
+
+        $nickname = $request->input('nickname') ?? 'Anonymous';
+
         $user = User::create([
 
-            'nickname' => $request->input('nickname'),
-            'email' =>$request->input('email'),
-            'password' =>bcrypt($request->input('password'))
+            'nickname' => $nickname,
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password'))
         ]);
 
         if ($user) {
