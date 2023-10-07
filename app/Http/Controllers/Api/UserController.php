@@ -26,7 +26,6 @@ class UserController extends Controller
 
         $user_errormsg = [
             
-            'email.email' => 'This email is already in use',
             'email.required' => 'Email field is required',
             'password.required' => 'Password field is required',
         ];
@@ -40,6 +39,15 @@ class UserController extends Controller
     
             ], 422);
         }
+        
+        //Verificamos si el email ya está en uso en la bbdd
+        if (User::where('email', $request->input('email'))->exists()) {
+            return response()->json([
+                'message' => 'This email is already in use',
+            ], 422);
+        } 
+
+
 
        // Si el nickname queda vacío, asignamos el valor anonymous con el operador de fusión null
 
