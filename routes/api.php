@@ -39,8 +39,10 @@ Route::post('login', [UserController::class, 'login'])->name('login');
 
 //register
 Route::middleware('auth:api')->group(function () {
+  
        Route::get('user', [UserController::class, 'user'])->name('user');
-     //   Route::get('logout', [UserController::class, 'logout'])->name('logout');
+       Route::put('user/{id}', [UserController::class, 'update'])->name('update');
+       Route::get('logout', [UserController::class, 'logout'])->name('logout');
         
 
     });
