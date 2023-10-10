@@ -25,6 +25,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Passport::tokensCan([
+            'admin' => 'show_all_players, win_percent, players_percent',
+            'player' => 'game_play, list_plays, delete_list, wins_plays'
+        ]);
+
+        Passport::setDefaultScope([
+            'player'
+        ]);
+
+
         Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
 
     }
