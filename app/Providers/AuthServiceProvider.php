@@ -24,10 +24,13 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
-
+        //Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
+        
         Passport::tokensCan([
+
             'admin' => 'show_all_players, win_percent, players_percent',
             'player' => 'game_play, list_plays, delete_list, wins_plays'
+            
         ]);
 
         Passport::setDefaultScope([
@@ -35,7 +38,7 @@ class AuthServiceProvider extends ServiceProvider
         ]);
 
 
-        Passport::loadKeysFrom(__DIR__.'/../secrets/oauth');
+        
 
     }
 }
