@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+
 
 
 
@@ -65,12 +67,19 @@ class UserController extends Controller
 
             'nickname' => $nickname,
             'email' => $request->input('email'),
-            'password' => bcrypt($request->input('password'))
+            'password' => bcrypt($request->input('password')),
+            'role_id' => Role::where('name', 'player')->first()->id,
         ]);
+
+        //Le añadimos el rol player en su tabla
+        //$user->roles()->attach(Role::where('name', 'player')->first());
+        //$user->('player');
+        //$role = Role::where('name', 'player')->first();
+       // $user->role()->attach($role->id);
 
         if ($user) {
             return response()->json([
-                'message' => 'Successfully created',
+                'message' => 'Player successfully created :)',
             ], 201);
 
         }
@@ -117,11 +126,20 @@ class UserController extends Controller
 
             $user = Auth::user();
             /** @var \App\Models\User $user **/
-            $token = $user->createToken('user_token')->accessToken;
+            $role = $user->role->name;
+
+            if($role == 'player'){
+                $token = $user->createToken('player_token', ['player'])->accessToken;
+            }
+            else if($role == 'admin'){
+                $token = $user->createToken('admin_token', ['admin'])->accessToken;
+            }
+
+          //  $token = $user->createToken('user_token')->accessToken;
 
             return response()->json ([
                 'user' => $user,
-                'message' => 'Successfully logged in',
+                'message' => 'Successfully logged in. Ready to play! ',
                 'access_token' => $token,
 
             ], 200);
@@ -130,7 +148,7 @@ class UserController extends Controller
          //si no son correctas
         else {
             return response()->json
-            (['message' => 'Invalid login credentials'
+            (['message' => 'Invalid login credentials :('
             ], 401);
         } 
 
@@ -138,17 +156,19 @@ class UserController extends Controller
     //update nombre de usuario registrado
     public function update(Request $request, $id) {
 
-       $user = User::find($id);
+        $user = User::find($id);
+        //$user = $user->role->name == 'admin' && 'player';
 
-        if(!$user) {
+
+        if(!$user && $user->role->name != 'player' || $user->role->name != 'admin'){
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'Sorry, you do not have permission to update this :(',
             ], 404);
         }
 
        $rules = [
             'nickname' => 'nullable|alpha_num:ascii|unique:users,nickname,'.$id,
-       ];
+            ];
 
        $error_msg = [
             'nickname.alpha_num' => 'This is not a correct nickname. Use letters and numbers only.',
@@ -174,12 +194,12 @@ class UserController extends Controller
             $user->update();
 
             return response()->json([
-                'message' => 'Nickname successfully updated',
+                'message' => 'Nickname successfully updated!',
             ], 200);
     }
 
         return response()->json([
-            'message' => 'Same nickname. No changes were made.',
+            'message' => 'Same nickname. No changes were made :(',
         ], 200);
 
     
@@ -194,7 +214,7 @@ class UserController extends Controller
           $token->revoke();
   
           return response()->json([
-            'message' => 'Successfully logged out'
+            'message' => 'Successfully logged out. See you soon!'
         ], 200);
       }
 }
