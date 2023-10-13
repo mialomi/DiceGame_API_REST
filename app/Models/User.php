@@ -10,6 +10,7 @@ use Laravel\Passport\HasApiTokens;
 use Laravel\Passport\Passport;
 use App\Http\Controllers\Api\UserController;
 use App\Models\Role;
+use App\Models\Game;
 
 class User extends Authenticatable
 {
@@ -58,7 +59,7 @@ class User extends Authenticatable
 
     public function games(){
 
-        return $this->hasMany(Games::class);
+        return $this->hasMany(Game::class);
     }
 
 

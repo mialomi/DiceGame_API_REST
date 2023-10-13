@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
+            $table->integer('dice1');
+            $table->integer('dice2');
+            $table->integer('result');
+            $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
     }
