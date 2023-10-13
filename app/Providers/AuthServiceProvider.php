@@ -36,9 +36,5 @@ class AuthServiceProvider extends ServiceProvider
         Passport::setDefaultScope([
             'player'
         ]);
-
-
-        
-
     }
 }
