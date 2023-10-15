@@ -65,18 +65,19 @@ class User extends Authenticatable
 
     // metodo para calcular su porcentaje de éxito
 
-    public function rates(Request $request) {
+    public function calculate_rates($id) {
 
-        $user = $request->user()->id;
-        $total_rolls = Game::where('user_id', $user)->count();
-        $success_rolls = Game::where('user_id', $user)
-                        ->where('result','7')->count()->count();
+        //$user = $request->user()->id;
+        $total_rolls = Game::where('user_id', $id)->count();
+        $success_rolls = Game::where('user_id', $id)
+                        ->where('result','7')->count();
         
         if($total_rolls > 0){
-            $success_rate = ($total_rolls / $success_rolls) * 100;
+            $success_rate = ($success_rolls / $total_rolls) * 100;
+            $success_rate = number_format($success_rate, 2);
             
             return response()->json([
-                'message' => 'Your success rate is ' . $success_rate
+                'message' => 'Your success rate is ' . $success_rate.'%'
             ]);
         }
         else {

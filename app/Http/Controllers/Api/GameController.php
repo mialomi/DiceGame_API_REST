@@ -27,12 +27,14 @@ class GameController extends Controller
             
             ], 403);
         }
-
+        //game_logic
 
         $dice1 = rand(1, 6);
         $dice2 = rand(1, 6);
 
         $result = $dice1 + $dice2;
+        
+        //new game
 
         $game = Game::create([
 
@@ -49,21 +51,25 @@ class GameController extends Controller
                 'dice1' => $dice1,
                 'dice2' => $dice2,
                 'result' => $result,
+                'rates' => $user->player_rates($id),
 
             ]);
         }
+
         else {
             return response()->json([
                 'message' => 'You LOOSE!',
                 'dice1' => $dice1,
                 'dice2' => $dice2,
                 'result' => $result,
+                'rates' => $user->player_rates($id),
 
             ]);
 
         }
 
-       
+    }
+    
 
 
 
@@ -75,8 +81,4 @@ class GameController extends Controller
 
 
 
-
-
-
-}
 }
