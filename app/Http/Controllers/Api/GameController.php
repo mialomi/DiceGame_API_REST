@@ -62,18 +62,18 @@ class GameController extends Controller
                 'dice1' => $dice1,
                 'dice2' => $dice2,
                 'result' => $result,
-                'rate' => $user->calculate_rates_($id),
+                'rate' => $user->calculate_rates($id),
 
             ]);
 
         }
     }    
 
-        public function show_player_rolls(Request $request, $id){
+    public function show_player_rolls(Request $request, $id){
 
             $user = User::find($id);
     
-            if (!$user && !$request->user()->id->hasRole('player') && !$request->user()->tokenCan('list_rolls')) {
+            if (!$user && !$request->user()->role->name !== 'player' && !$request->user()->tokenCan('list_rolls')) {
               
                 return response()->json([
                     
@@ -113,7 +113,39 @@ class GameController extends Controller
     
                 ]);
             }
+    }
+
+    public function delete_players_list(Request $request, $id) {
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'error' => 'User not found.'
+            ], 404);
         }
+
+        if ($user->role->name !== 'player' && !$request->user()->tokenCan('delete_list')) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed! :('
+            ], 403);
+        }
+
+        $delete_list = Game::where('user_id', $id)->delete();
+
+        if(empty($delete_list)) {
+            return response()->json([
+                'message' => 'No records were deleted.',
+            ]);
+        }    
+        else{
+            return response()->json([
+                'message' => 'Your records were successfully deleted.',
+            ]);
+        }
+
+
+
 
     }
     
@@ -128,3 +160,4 @@ class GameController extends Controller
 
 
 
+}

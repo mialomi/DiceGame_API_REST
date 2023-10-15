@@ -37,15 +37,15 @@ Route::middleware('auth:api, scope:player')->group(function () {
 
       Route::post('/players/{id}/games/', [GameController::class, 'diceRoll']); //un jugador/a específic realitza una tirada dels daus.
       Route::get('/players/{id}/games', [GameController::class, 'show_player_rolls']); //retorna el llistat de jugades per un jugador/a i % exit
-      Route::delete('/players/{id}/games', [GameController::class, 'delete_list']); //elimina les tirades del jugador/a.
+      Route::delete('/players/{id}/games', [GameController::class, 'delete_players_list']); //elimina les tirades del jugador/a.
 
 });
 
 Route::middleware('auth:api, scope:admin')->group(function () {
 
       Route::get('/players', [UserController::class, 'list_players']); // retorna el llistat de tots els jugadors/es del sistema amb el seu percentatge mitjà d’èxits
-      Route::get('/players/ranking', [UserController::class, 'ranking']); //retorna el rànquing mitjà de tots els jugadors/es del sistema. És a dir, el percentatge mitjà d’èxits.
-      Route::get('/players/ranking/winner', [UserController::class, 'ranking_win']); //retorna el jugador/a amb millor percentatge d’èxit.
+      Route::get('/players/ranking', [UserController::class, 'ranking_players']); //retorna el rànquing mitjà de tots els jugadors/es del sistema. És a dir, el percentatge mitjà d’èxits.
+      Route::get('/players/ranking/winner', [UserController::class, 'ranking_winner']); //retorna el jugador/a amb millor percentatge d’èxit.
       Route::get('/players/ranking/loser', [UserController::class, 'ranking_loser']); //retorna el jugador/a amb pitjor percentatge d’èxit.
 
 });
