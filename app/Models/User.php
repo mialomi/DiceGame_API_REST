@@ -76,14 +76,15 @@ class User extends Authenticatable
             $success_rate = ($success_rolls / $total_rolls) * 100;
             $success_rate = number_format($success_rate, 2);
             
-            return response()->json([
+            return 'Your success rate is '. number_format($success_rate, 2) . '%';
+            
+            /*response()->json([
                 'message' => 'Your success rate is ' . $success_rate.'%'
-            ]);
+            ]);*/
         }
         else {
-            return response()->json([
-                'message' => 'No records found.'
-            ]);
+            return 'No records found.';
+            
         }
   
 }

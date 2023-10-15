@@ -20,7 +20,7 @@ class Game extends Model
 
     public function user() {
 
-        return $this->belongsTo(Game::class);
+        return $this->belongsTo(User::class);
     }
 
 
