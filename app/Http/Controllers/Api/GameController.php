@@ -51,7 +51,7 @@ class GameController extends Controller
                 'dice1' => $dice1,
                 'dice2' => $dice2,
                 'result' => $result,
-                'rates' => $user->player_rates($id),
+                'rate' => $user->calculate_rates($id),
 
             ]);
         }
@@ -62,10 +62,57 @@ class GameController extends Controller
                 'dice1' => $dice1,
                 'dice2' => $dice2,
                 'result' => $result,
-                'rates' => $user->player_rates($id),
+                'rate' => $user->calculate_rates_($id),
 
             ]);
 
+        }
+    }    
+
+        public function show_player_rolls(Request $request, $id){
+
+            $user = User::find($id);
+    
+            if (!$user && !$request->user()->id->hasRole('player') && !$request->user()->tokenCan('list_rolls')) {
+              
+                return response()->json([
+                    
+                    'error' => 'Hey, you are not allowed! :('
+                
+                ], 403);
+            }
+    
+            $rolls = Game::where('user_id', $id)->get();
+            
+            $player_rolls = [];
+    
+            foreach ($rolls as $roll) {
+    
+                $player_rolls [] = [
+    
+                    'message' => $roll->result == 7 ? 'You WIN!' : 'You LOOSE!',
+                    'dice1' => $roll->dice1,
+                    'dice2' => $roll->dice2,
+                    'result' => $roll->result,
+                    
+                ];
+            }
+    
+            if (empty($player_rolls)){
+                return response()->json([
+    
+                    'error' => 'No records found. Start playing!',
+                ]);
+            }
+            else {
+    
+                return response()->json([
+    
+                    $player_rolls,
+                    'success rate' => $user->calculate_rates($id),
+    
+                ]);
+            }
         }
 
     }
@@ -81,4 +128,3 @@ class GameController extends Controller
 
 
 
-}
