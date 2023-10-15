@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\GameController;
 
 
 /*
@@ -34,7 +35,7 @@ Route::middleware('auth:api, scope:admin,player')->group(function () { //, scope
 
 Route::middleware('auth:api, scope:player')->group(function () {
 
-      Route::post('/user/{id}/games/', [GameController::class, 'game']); //un jugador/a específic realitza una tirada dels daus.
+      Route::post('/players/{id}/games', [GameController::class, 'diceRoll']); //un jugador/a específic realitza una tirada dels daus.
       Route::get('/players/{id}/games', [UserController::class, 'list_games']); //retorna el llistat de jugades per un jugador/a i % exit
       Route::delete('/players/{id}/games', [UserController::class, 'delete_list']); //elimina les tirades del jugador/a.
 
