@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Http\Request;
 use Laravel\Passport\Passport;
 use App\Http\Controllers\Api\UserController;
 use App\Models\Role;
@@ -62,5 +63,28 @@ class User extends Authenticatable
         return $this->hasMany(Game::class);
     }
 
+    // metodo para calcular su porcentaje de éxito
+
+    public function rates(Request $request) {
+
+        $user = $request->user()->id;
+        $total_rolls = Game::where('user_id', $user)->count();
+        $success_rolls = Game::where('user_id', $user)
+                        ->where('result','7')->count()->count();
+        
+        if($total_rolls > 0){
+            $success_rate = ($total_rolls / $success_rolls) * 100;
+            
+            return response()->json([
+                'message' => 'Your success rate is ' . $success_rate
+            ]);
+        }
+        else {
+            return response()->json([
+                'message' => 'No records found.'
+            ]);
+        }
+  
+}
 
 }
