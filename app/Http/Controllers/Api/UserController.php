@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -216,7 +217,61 @@ class UserController extends Controller
             'message' => 'Successfully logged out. See you soon!'
         ], 200);
       }
-}
+
+      //listado con todas las tiradas con los resultados y su tasa de éxito
+    
+
+    public function list_players(Request $request){
+
+        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_all_players')) {
+          
+            return response()->json([
+                
+                'error' => 'Hey, you are not allowed! :('
+            
+            ], 403);
+        }
+
+        $players = User::where('role_id', '2')->get();
+        
+        $players_list = [];
+
+        foreach ($players as $player) {
+            
+            $player = [
+
+                'name' => $player->nickname,
+                'rate' => $player->calculate_rates($player->id),
+            
+            ];
+
+            $players_list[] = $player;
+        };
+        return response()->json([
+    
+            $players_list,
+                    
+            ]);
+    }
+
+
+
+
+
+
+
+
+
+    }
+        
+    
+
+
+
+
+
+
+
 
 
 
