@@ -16,6 +16,19 @@ class GameController extends Controller
 
     public function diceRoll(Request $request, $id) {
 
+        $user = User::find($id);
+
+            
+        if (!$user && !$request->user()->id->hasRole('player') && !$request->user()->tokenCan('dice_roll')) {
+          
+            return response()->json([
+                
+                'error' => 'Hey, you are not allowed to play! :('
+            
+            ], 403);
+        }
+
+
         $dice1 = rand(1, 6);
         $dice2 = rand(1, 6);
 
@@ -26,7 +39,7 @@ class GameController extends Controller
             'dice1' => $dice1,
             'dice2' => $dice2,
             'result' => $result,
-            'user_id' => $request->user->$id
+            'user_id' => $request->user()->id
 
         ]);
 
