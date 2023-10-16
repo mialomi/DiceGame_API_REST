@@ -28,12 +28,13 @@ class AuthServiceProvider extends ServiceProvider
         
         Passport::tokensCan([
 
-            'admin' => 'show_all_players, win_percent, players_percent',
-            'player' => 'game_play, list_plays, delete_list, wins_plays'
+            'admin' => 'list_all_players, list_ranking, list_winner, list_loser',
+            'player' => 'dice_roll, list_rolls, delete_list'
             
         ]);
 
         Passport::setDefaultScope([
+            
             'player'
         ]);
     }
