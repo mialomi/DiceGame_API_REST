@@ -224,34 +224,119 @@ class UserController extends Controller
     public function list_players(Request $request){
 
         if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_all_players')) {
-          
             return response()->json([
-                
                 'error' => 'Hey, you are not allowed! :('
-            
             ], 403);
         }
 
         $players = User::where('role_id', '2')->get();
-        
+
         $players_list = [];
 
         foreach ($players as $player) {
-            
-            $player = [
 
-                'name' => $player->nickname,
-                'rate' => $player->calculate_rates($player->id),
-            
-            ];
+        $player = [
+            'nickname' => $player->nickname,
+            'rate' => $player->calculate_rates($player->id),
+        ];
 
             $players_list[] = $player;
-        };
+        };  
+
+        return $players_list;
+
+       
+    }
+
+    public function ranking_players(Request $request){
+
+        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_ranking')) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed! :('
+            ], 403);
+        }
+        
+        //método para conseguir todos los jugadores
+
+        $user = new User;
+        $gamers_list = $user->get_players();
+        
+        //orden desc según el rate
+        usort($gamers_list, function ($a, $b) {
+            return $b['rate'] <=> $a['rate'];
+        });
+
+        $ranking_list = [];
+
+        foreach($gamers_list as $key =>$player) {
+            $list_position = [
+                'Position' => $key +1,
+                'nickname' => $player['nickname'],
+                'rate' => $player['rate'],
+            ];
+
+            $ranking_list[] = $list_position;
+        }
+
+        $game = new Game;
+        $global_rate = $game->calculate_global_rate();
+
         return response()->json([
-    
-            $players_list,
+            
+            $global_rate,
+            $ranking_list,
                     
             ]);
+        
+    }
+
+    public function ranking_winner(Request $request){
+
+        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_winner')) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed! :('
+            ], 403);
+        }
+
+        $user = new User;
+        $winners_list = $user->get_players();
+
+        usort($winners_list, function ($a, $b) {
+            return $b['rate'] <=> $a['rate'];
+        });
+
+        return response()->json([
+
+            $winners_list[0],
+        ]);
+
+    }
+
+    public function ranking_loser(Request $request){
+
+        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_loser')) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed! :('
+            ], 403);
+        }
+
+        $user = new User;
+        $losers_list = $user->get_players();
+
+        //return $players_list;
+
+        usort($losers_list, function ($a, $b) {
+            return $a['rate'] <=> $b['rate'];
+        });
+
+        return response()->json([
+
+            $losers_list[0],
+        ]);
+
+    }
+
+
     }
 
 
@@ -260,9 +345,7 @@ class UserController extends Controller
 
 
 
-
-
-    }
+    
         
     
 
