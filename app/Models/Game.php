@@ -23,7 +23,20 @@ class Game extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function calculate_global_rate() {
+
+        $total_wins = Game::where('result', '7')->count();
+
+        $total_plays = Game::count();
+
+        if($total_plays == 0) {
+            return 0;
+        }
+
+        $average_success = ($total_wins / $total_plays) * 100;
+
+        return 'The average of all players is ' . number_format($average_success, 2). ' %';
 
 
-
+    }
 }
