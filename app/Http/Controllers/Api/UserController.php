@@ -13,18 +13,16 @@ use Illuminate\Support\Facades\Validator;
 
 
 
-
-
 class UserController extends Controller
 {
 
-//register
+    //register
 
     public function register(Request $request){
 
 
         $user_rules = [
-            'nickname' => 'nullable|alpha_num:ascii|unique:users',
+            'nickname' => 'nullable|alpha_num:ascii|unique:users|max:20',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|min:8',
         ];
@@ -32,6 +30,7 @@ class UserController extends Controller
         $error_msg = [
             'nickname.alpha_num' => 'This is not a correct nickname. Use letters and numbers only.',
             'nickname.unique' => 'This nickname is already in use. Write a new nickname.',
+            'nickname.max' => 'This nickname is too long. Only 20 characters allowed.',
             'email.email' => 'The email field must contain a valid email.',
             'email.required' => 'The email field is required.',
             'email.unique' => 'This email is already in use.',
@@ -51,20 +50,13 @@ class UserController extends Controller
     
             ], 422);
         }
-        
-        //Verificamos que el email no esté duplicado en la bbdd
-       /* if (User::where('email', $request->input('email'))->exists()) {
-            return response()->json([
-                'message' => 'This email is already in use',
-            ], 422);
-        } */
 
 
        // Si el nickname queda vacío, asignamos el valor anonymous con el operador de fusión null
 
         $nickname = $request->input('nickname') ?? 'Anonymous';
 
-        // Si todo es correcto -> creamos un nuevo ususario
+        // Si todo es correcto -> creamos un nuevo ususario y le asignamos el rol player
         $user = User::create([
 
             'nickname' => $nickname,
@@ -72,12 +64,6 @@ class UserController extends Controller
             'password' => bcrypt($request->input('password')),
             'role_id' => Role::where('name', 'player')->first()->id,
         ]);
-
-        //Le añadimos el rol player en su tabla
-        //$user->roles()->attach(Role::where('name', 'player')->first());
-        //$user->('player');
-        //$role = Role::where('name', 'player')->first();
-       // $user->role()->attach($role->id);
 
         if ($user) {
             return response()->json([
@@ -160,18 +146,25 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        if(!$user && $user->role->name != 'player' || $user->role->name != 'admin'){
+        if (!$user) {
+            return response()->json([
+                'error' => 'User not found.'
+            ], 404);
+        }
+
+        if( ($user->role->name !== 'player' || $user->role->name !== 'admin') && !$user->tokenCan('update_nick')){
             return response()->json([
                 'message' => 'Sorry, you do not have permission to update this :(',
             ], 404);
         }
 
        $rules = [
-            'nickname' => 'nullable|alpha_num:ascii|unique:users,nickname,'.$id,
+            'nickname' => 'nullable|alpha_num:ascii|max:20|unique:users,nickname,'.$id,
             ];
 
        $error_msg = [
             'nickname.alpha_num' => 'This is not a correct nickname. Use letters and numbers only.',
+            'nickname.max' => 'This nickname is too long. Only 20 characters allowed.',
             'nickname.unique' => 'This nickname is already taken. Please write a new nickname.',
        ];
 
@@ -223,7 +216,7 @@ class UserController extends Controller
 
     public function list_players(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_all_players')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_all_players')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -250,7 +243,7 @@ class UserController extends Controller
 
     public function ranking_players(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_ranking')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_ranking')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -292,7 +285,7 @@ class UserController extends Controller
 
     public function ranking_winner(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_winner')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_winner')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -314,7 +307,7 @@ class UserController extends Controller
 
     public function ranking_loser(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_loser')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_loser')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);

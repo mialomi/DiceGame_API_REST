@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Role;
+use App\Models\Game;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Http\Request;
 use Laravel\Passport\Passport;
-use App\Http\Controllers\Api\UserController;
-use App\Models\Role;
-use App\Models\Game;
+
+//use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 
 class User extends Authenticatable
 {
@@ -67,7 +69,6 @@ class User extends Authenticatable
     // metodo para calcular su porcentaje de éxito
     public function calculate_rates($id) {
 
-        //$user = $request->user()->id;
         $total_rolls = Game::where('user_id', $id)->count();
 
         $success_rolls = Game::where('user_id', $id)
@@ -83,7 +84,7 @@ class User extends Authenticatable
 
     }
 
-    //método para listar todos los jugadores
+    //método para listar todos los jugadores que tienen juagadas
     public function get_players() {
 
         $players = User::where('role_id', '2')

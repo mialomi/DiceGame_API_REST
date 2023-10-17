@@ -26,7 +26,6 @@ class Game extends Model
     public function calculate_global_rate() {
 
         $total_wins = Game::where('result', '7')->count();
-
         $total_plays = Game::count();
 
         if($total_plays == 0) {
