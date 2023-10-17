@@ -160,10 +160,19 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        if(!$user && $user->role->name != 'player' || $user->role->name != 'admin'){
+        if (!$user) {
             return response()->json([
-                'message' => 'Sorry, you do not have permission to update this :(',
+                'error' => 'User not found.'
             ], 404);
+        }
+            
+        if ($user->role->name !== 'player' && !$request->user()->tokenCan('update_nick')) {
+          
+            return response()->json([
+                
+                'error' => 'Hey, you are not allowed to play! :('
+            
+            ], 403);
         }
 
        $rules = [
@@ -187,16 +196,18 @@ class UserController extends Controller
 
         $new_nickname = $request->input('nickname');
         
+        if(empty($new_nickname)){
+            $new_nickname = 'Anonymous';
+        }
+        
         if ($new_nickname !== $user->nickname){
-                
-            $user->nickname = $new_nickname ?? 'Anonymous';
-            
+            $user->nickname = $new_nickname;
             $user->update();
 
             return response()->json([
                 'message' => 'Nickname successfully updated!',
             ], 200);
-    }
+        }
 
         return response()->json([
             'message' => 'Same nickname. No changes were made :(',

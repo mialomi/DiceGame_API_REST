@@ -120,8 +120,111 @@ class UserControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $this->assertDatabaseHas('users', [
+            $this->assertDatabaseHas('users', [
             'role_id' => '2' ]);
         
     }
+    //update 
+    public function test_user_can_update_nickname(): void
+    
+    {
+        $user = User::factory()->create([
+            'nickname' => 'OldNickname',
+            'email' => 'old@example.com',
+            'password' => '123456789',
+            'role_id' => Role::where('name', 'player')->first()->id,
+        ]);
+    
+        $newNickname = 'NewNickname';
+    
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $user->createToken('player_token', ['player'])->accessToken,
+        ])->putJson('/api/user/'.$user->id, [
+            'nickname' => $newNickname,
+        ]);
+
+        dump($response->content());
+    
+        $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'Nickname successfully updated!',
+            ]);
+    
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'nickname' => $newNickname,
+        ]);
+        
+
+    }
+
+    public function test_user_admin_cannot_update_nickname(): void
+    
+    {
+        $user = User::factory()->create([
+            'nickname' => 'OldNickname',
+            'email' => 'old@example.com',
+            'password' => '123456789',
+            'role_id' => Role::where('name', 'admin')->first()->id,
+        ]);
+    
+        $newNickname = 'NewNickname';
+    
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $user->createToken('admin_token', ['admin'])->accessToken,
+        ])->putJson('/api/user/'.$user->id, [
+            'nickname' => $newNickname,
+        ]);
+
+        dump($response->content());
+    
+        $response->assertStatus(403)
+            ->assertJson([
+                'error' => 'Hey, you are not allowed to play! :(',
+            ]);
+        
+    }
+
+    public function test_user_player_can_update_with_empty_nickname_(): void
+    
+    {
+        $user = User::factory()->create([
+            'nickname' => 'OldNickname',
+            'email' => 'old@example.com',
+            'password' => '123456789',
+            'role_id' => Role::where('name', 'player')->first()->id,
+        ]);
+    
+        $newNickname = '';
+    
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $user->createToken('player_token', ['player'])->accessToken,
+        ])->putJson('/api/user/'.$user->id, [
+            'nickname' => $newNickname,
+        ]);
+
+        dump($response->content());
+    
+        $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'Nickname successfully updated!',
+            ]);
+    
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'nickname' => 'Anonymous',
+        ]);
+        
+
+    }
+
+
+
+
+
+
+
+
+
+
 }

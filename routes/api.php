@@ -24,7 +24,7 @@ Route::post('register', [UserController::class, 'register'])->name('register');
 Route::post('login', [UserController::class, 'login'])->name('login');
 
 //register
-Route::middleware('auth:api, scope:admin,player')->group(function () { //, scope:admin,player
+Route::middleware('auth:api, scope:player')->group(function () { //, scope:admin,player
 
 
        Route::get('user', [UserController::class, 'user'])->name('user');
