@@ -146,7 +146,13 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        if(!$user && $user->role->name != 'player' || $user->role->name != 'admin'){
+        if (!$user) {
+            return response()->json([
+                'error' => 'User not found.'
+            ], 404);
+        }
+
+        if( ($user->role->name !== 'player' || $user->role->name !== 'admin') && !$user->tokenCan('update_nick')){
             return response()->json([
                 'message' => 'Sorry, you do not have permission to update this :(',
             ], 404);
@@ -210,7 +216,7 @@ class UserController extends Controller
 
     public function list_players(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_all_players')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_all_players')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -237,7 +243,7 @@ class UserController extends Controller
 
     public function ranking_players(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_ranking')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_ranking')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -279,7 +285,7 @@ class UserController extends Controller
 
     public function ranking_winner(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_winner')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_winner')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -301,7 +307,7 @@ class UserController extends Controller
 
     public function ranking_loser(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_loser')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_loser')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);

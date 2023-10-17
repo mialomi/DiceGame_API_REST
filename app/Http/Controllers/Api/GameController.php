@@ -18,8 +18,13 @@ class GameController extends Controller
 
         $user = User::find($id);
 
+        if (!$user) {
+            return response()->json([
+                'error' => 'User not found.'
+            ], 404);
+        }
             
-        if (!$user && !$request->user()->id->hasRole('player') && !$request->user()->tokenCan('dice_roll')) {
+        if ($user->role->name !== 'player' && !$request->user()->tokenCan('dice_roll')) {
           
             return response()->json([
                 
@@ -27,6 +32,7 @@ class GameController extends Controller
             
             ], 403);
         }
+        
         //game_logic
 
         $dice1 = rand(1, 6);
@@ -72,8 +78,14 @@ class GameController extends Controller
     public function show_player_rolls(Request $request, $id){
 
             $user = User::find($id);
+
+            if (!$user) {
+                return response()->json([
+                    'error' => 'User not found.'
+                ], 404);
+            }
     
-            if (!$user && !$request->user()->role->name !== 'player' && !$request->user()->tokenCan('list_rolls')) {
+            if ($user->role->name !== 'player' && !$request->user()->tokenCan('list_rolls')) {
               
                 return response()->json([
                     
