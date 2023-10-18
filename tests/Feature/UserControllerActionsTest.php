@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 //use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+
 use Tests\TestCase;
 
 class UserControllerActionsTest extends TestCase
@@ -25,17 +25,17 @@ class UserControllerActionsTest extends TestCase
         ]);
 
         $player1 = User::factory()->create([
-            'role_id' => Role::where('name', 'player')->first(),
             'nickname' => 'Player1',
             'email' => 'player1@example.com',
             'password' => '123456789',
+            'role_id' => Role::where('name', 'player')->first(),
         ]);
     
         $player2 = User::factory()->create([
-            'role_id' => Role::where('name', 'player')->first(),
             'nickname' => 'Player2',
             'email' => 'player@example.com',
             'password' => '123456789',
+            'role_id' => Role::where('name', 'player')->first(),
         ]);
 
         $game1 = Game::factory()->create([
@@ -64,8 +64,8 @@ class UserControllerActionsTest extends TestCase
     public function test_player_cannot_list_players(): void
     {
         $user = User::factory()->create([
-            'nickname' => 'AdminNickname',
-            'email' => 'admin@example.com',
+            'nickname' => 'PlayerNickname',
+            'email' => 'player@example.com',
             'password' => '123456789',
             'role_id' => Role::where('name', 'player')->first()->id,
         ]);
@@ -94,9 +94,7 @@ class UserControllerActionsTest extends TestCase
             'Authorization' => 'Bearer ' . $user->createToken('admin_token', ['admin'])->accessToken,
         ])->getJson('/api/players/ranking');
 
-        dump($response->content());
-    
-        //$response->assertJson([
+        //dump($response->content());
     
         $response->assertStatus(200);
 
@@ -112,8 +110,8 @@ class UserControllerActionsTest extends TestCase
         public function test_player_cannot_ranking_players(): void
         {
             $user = User::factory()->create([
-                'nickname' => 'AdminNickname',
-                'email' => 'admin@example.com',
+                'nickname' => 'playerNickname',
+                'email' => 'player@example.com',
                 'password' => '123456789',
                 'role_id' => Role::where('name', 'player')->first()->id,
             ]);
@@ -189,7 +187,7 @@ class UserControllerActionsTest extends TestCase
                     ->assertJsonCount('1');
             
         }
-        public function test_player_cannot_see_looser_list(): void
+        public function test_player_cannot_see_loser_list(): void
         {
             $user = User::factory()->create([
                 'nickname' => 'PlayerNickname',
@@ -202,7 +200,7 @@ class UserControllerActionsTest extends TestCase
                 'Authorization' => 'Bearer ' . $user->createToken('player_token', ['player'])->accessToken,
             ])->getJson('/api/players/ranking/loser');
     
-            dump($response->content());
+            //dump($response->content());
         
             $response->assertStatus(403);
                     

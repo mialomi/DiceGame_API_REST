@@ -6,16 +6,12 @@ Use App\Models\Game;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Laravel\Passport\Passport;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 { 
     use DatabaseTransactions;
-    /**
-     * A basic feature test example.
-     */
+    
     public function test_register_is_correct(): void
     {
         $response = $this->postJson('/api/register',[
@@ -51,7 +47,6 @@ class UserControllerTest extends TestCase
         ]);    
 
         $response->assertStatus(201);
-
     }
 
     public function test_register_data_is_saved(): void
@@ -67,6 +62,7 @@ class UserControllerTest extends TestCase
         $this->assertDatabaseMissing('users', [
             'email' => 'test@example.com' ]);
     }
+
     public function test_register_email_already_exist(): void
     {
         $response = $this->post('/api/register',[
@@ -155,7 +151,6 @@ class UserControllerTest extends TestCase
             'nickname' => $newNickname,
         ]);
         
-
     }
 
     public function test_user_admin_cannot_update_nickname(): void
@@ -180,7 +175,7 @@ class UserControllerTest extends TestCase
     
         $response->assertStatus(403)
             ->assertJson([
-                'error' => 'Hey, you are not allowed to play! :(',
+                'error' => 'Hey, you are not allowed to update this! :(',
             ]);
         
     }
@@ -210,7 +205,8 @@ class UserControllerTest extends TestCase
                 'message' => 'Nickname successfully updated!',
             ]);
     
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas
+        ('users', [
             'id' => $user->id,
             'nickname' => 'Anonymous',
         ]);
@@ -220,23 +216,23 @@ class UserControllerTest extends TestCase
     //Logout
     public function test_logout_is_correct(): void
     {
-        
-            $user = User::factory()->create([
-                'nickname' => 'OldNickname',
-                'email' => 'old@example.com',
-                'password' => '123456789',
-                'role_id' => Role::where('name', 'player')->first(),
-            ]);
-            $response = $this->withHeaders([
-                'Authorization' => 'Bearer ' . $user->createToken('player_token', ['player'])->accessToken,
+        $user = User::factory()->create([
+            'nickname' => 'userickname',
+            'email' => 'user@example.com',
+            'password' => '123456789',
+            'role_id' => Role::where('name', 'player')->first(),
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $user->createToken('player_token', ['player'])->accessToken,
             ])->getJson('/api/logout');
 
-            dump($response->content());
+        //dump($response->content());
 
-            $response->assertStatus(200)
-            ->assertJson([
-                'message' => 'Successfully logged out. See you soon!'
-            ]);
+        $response->assertStatus(200)
+                ->assertJson([
+                    'message' => 'Successfully logged out. See you soon!'
+                ]);
         
     }
 
