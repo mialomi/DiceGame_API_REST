@@ -143,7 +143,7 @@ class UserControllerTest extends TestCase
             'nickname' => $newNickname,
         ]);
 
-        dump($response->content());
+        //dump($response->content());
     
         $response->assertStatus(200)
             ->assertJson([
@@ -176,7 +176,7 @@ class UserControllerTest extends TestCase
             'nickname' => $newNickname,
         ]);
 
-        dump($response->content());
+        //dump($response->content());
     
         $response->assertStatus(403)
             ->assertJson([
@@ -203,7 +203,7 @@ class UserControllerTest extends TestCase
             'nickname' => $newNickname,
         ]);
 
-        dump($response->content());
+        //dump($response->content());
     
         $response->assertStatus(200)
             ->assertJson([
@@ -215,7 +215,29 @@ class UserControllerTest extends TestCase
             'nickname' => 'Anonymous',
         ]);
         
+    }
 
+    //Logout
+    public function test_logout_is_correct(): void
+    {
+        
+            $user = User::factory()->create([
+                'nickname' => 'OldNickname',
+                'email' => 'old@example.com',
+                'password' => '123456789',
+                'role_id' => Role::where('name', 'player')->first(),
+            ]);
+            $response = $this->withHeaders([
+                'Authorization' => 'Bearer ' . $user->createToken('player_token', ['player'])->accessToken,
+            ])->getJson('/api/logout');
+
+            dump($response->content());
+
+            $response->assertStatus(200)
+            ->assertJson([
+                'message' => 'Successfully logged out. See you soon!'
+            ]);
+        
     }
 
 
