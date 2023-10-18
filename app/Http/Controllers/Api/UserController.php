@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function register(Request $request){
+    public function register(Request $request) {
 
 
         $user_rules = [
@@ -131,7 +131,7 @@ class UserController extends Controller
 
     }
     //update usuario registrado
-    public function update(Request $request, $id) {
+    public function update(Request $request, int $id) {
 
         $user = User::find($id);
 
@@ -192,7 +192,6 @@ class UserController extends Controller
             'message' => 'Same nickname. No changes were made :(',
         ], 200);
 
-    
     }
 
     public function logout(Request $request) {

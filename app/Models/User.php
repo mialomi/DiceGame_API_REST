@@ -67,7 +67,7 @@ class User extends Authenticatable
 
     
     // metodo para calcular su porcentaje de éxito
-    public function calculate_rates($id) {
+    public function calculate_rates(int $id) : string {
 
         $total_rolls = Game::where('user_id', $id)->count();
 
@@ -85,7 +85,7 @@ class User extends Authenticatable
     }
 
     //método para listar todos los jugadores que tienen juagadas
-    public function get_players() {
+    public function get_players() : array {
 
         $players = User::where('role_id', '2')
                     ->whereHas('games')            

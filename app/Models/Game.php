@@ -23,7 +23,7 @@ class Game extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function calculate_global_rate() {
+    public function calculate_global_rate(): int|string {
 
         $total_wins = Game::where('result', '7')->count();
         $total_plays = Game::count();

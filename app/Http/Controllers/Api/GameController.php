@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class GameController extends Controller
 {
 
-    public function diceRoll(Request $request, $id) {
+    public function diceRoll(Request $request, int $id) {
 
         $user = User::find($id);
 
@@ -32,9 +32,7 @@ class GameController extends Controller
         }
             
         if ($user->role->name !== 'player' && !$request->user()->tokenCan('dice_roll')) {
-          
             return response()->json([
-                
                 'error' => 'Hey, you are not allowed to play! :('
             
             ], 403);
@@ -50,12 +48,10 @@ class GameController extends Controller
         //new game
 
         $game = Game::create([
-
             'dice1' => $dice1,
             'dice2' => $dice2,
             'result' => $result,
             'user_id' => $request->user()->id
-
         ]);
 
         if ($result == 7) {
@@ -65,10 +61,8 @@ class GameController extends Controller
                 'dice2' => $dice2,
                 'result' => $result,
                 'rate' => $user->calculate_rates($id),
-
             ]);
         }
-
         else {
             return response()->json([
                 'message' => 'You LOOSE!',
@@ -76,13 +70,12 @@ class GameController extends Controller
                 'dice2' => $dice2,
                 'result' => $result,
                 'rate' => $user->calculate_rates($id),
-
             ]);
 
         }
     }    
 
-    public function show_player_rolls(Request $request, $id){
+    public function show_player_rolls(Request $request, int $id){
 
             $user = User::find($id);
 
@@ -110,16 +103,13 @@ class GameController extends Controller
             $rolls = Game::where('user_id', $id)->get();
             
             $player_rolls = [];
-    
+
             foreach ($rolls as $roll) {
-    
                 $player_rolls [] = [
-    
                     'message' => $roll->result == 7 ? 'You WIN!' : 'You LOOSE!',
                     'dice1' => $roll->dice1,
                     'dice2' => $roll->dice2,
                     'result' => $roll->result,
-                    
                 ];
             }
     
@@ -137,7 +127,7 @@ class GameController extends Controller
             }
     }
 
-    public function delete_players_list(Request $request, $id) {
+    public function delete_players_list(Request $request, int $id) {
 
         $user = User::find($id);
 
