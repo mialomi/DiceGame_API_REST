@@ -165,13 +165,17 @@ class UserController extends Controller
                 'error' => 'User not found.'
             ], 404);
         }
+
+        if($request->user()->id !== $user->id) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed to update this! :('
+            ], 403);
+        }
             
         if ($user->role->name !== 'player' && !$request->user()->tokenCan('update_nick')) {
           
             return response()->json([
-                
-                'error' => 'Hey, you are not allowed to play! :('
-            
+                'error' => 'Hey, you are not allowed to update this! :('
             ], 403);
         }
 

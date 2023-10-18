@@ -23,6 +23,13 @@ class GameController extends Controller
                 'error' => 'User not found.'
             ], 404);
         }
+
+        if($request->user()->id !== $user->id) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed to play here! :('
+            
+            ], 403);
+        }
             
         if ($user->role->name !== 'player' && !$request->user()->tokenCan('dice_roll')) {
           
@@ -84,6 +91,12 @@ class GameController extends Controller
                     'error' => 'User not found.'
                 ], 404);
             }
+            if($request->user()->id !== $user->id) {
+                return response()->json([
+                    'error' => 'Hey, you are not allowed to play here! :('
+                
+                ], 403);
+            }
     
             if ($user->role->name !== 'player' && !$request->user()->tokenCan('list_rolls')) {
               
@@ -135,6 +148,13 @@ class GameController extends Controller
             return response()->json([
                 'error' => 'User not found.'
             ], 404);
+        }
+
+        if($request->user()->id !== $user->id) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed to delete this! :('
+            
+            ], 403);
         }
 
         if ($user->role->name !== 'player' && !$request->user()->tokenCan('delete_list')) {
