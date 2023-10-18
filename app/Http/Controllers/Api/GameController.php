@@ -125,14 +125,11 @@ class GameController extends Controller
     
             if (empty($player_rolls)){
                 return response()->json([
-    
                     'error' => 'No records found. Start playing!',
                 ]);
             }
             else {
-    
                 return response()->json([
-    
                     $player_rolls,
                     'success rate' => $user->calculate_rates($id),
     
@@ -175,9 +172,6 @@ class GameController extends Controller
                 'message' => 'Your records were successfully deleted.',
             ]);
         }
-
-
-
 
     }
     
