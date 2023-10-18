@@ -12,14 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 
-
-
-
 class UserController extends Controller
 {
-
-//register
-
     public function register(Request $request){
 
 
@@ -42,8 +36,6 @@ class UserController extends Controller
         //validamos datos introducidos
         $validator = Validator::make($request-> all(), $user_rules, $error_msg);
 
-        //Si algun dato input está mal, envía los mensajes de error
-
         if ($validator->fails()){
             return response()->json([
                 'message' => 'Invalid request',
@@ -51,14 +43,6 @@ class UserController extends Controller
     
             ], 422);
         }
-        
-        //Verificamos que el email no esté duplicado en la bbdd
-       /* if (User::where('email', $request->input('email'))->exists()) {
-            return response()->json([
-                'message' => 'This email is already in use',
-            ], 422);
-        } */
-
 
        // Si el nickname queda vacío, asignamos el valor anonymous con el operador de fusión null
 
@@ -73,19 +57,12 @@ class UserController extends Controller
             'role_id' => Role::where('name', 'player')->first()->id,
         ]);
 
-        //Le añadimos el rol player en su tabla
-        //$user->roles()->attach(Role::where('name', 'player')->first());
-        //$user->('player');
-        //$role = Role::where('name', 'player')->first();
-       // $user->role()->attach($role->id);
-
         if ($user) {
             return response()->json([
                 'message' => 'Player successfully created :)',
             ], 201);
 
         }
-
     }
 
     // user login
@@ -117,7 +94,7 @@ class UserController extends Controller
     
             ], 401);
         }
-        //si sigue, pasamos a autenticar el usuario
+    
         $user_login = [
             'email' => $request->input('email'),
             'password' => $request->input('password'),
@@ -137,8 +114,6 @@ class UserController extends Controller
                 $token = $user->createToken('admin_token', ['admin'])->accessToken;
             }
 
-          //  $token = $user->createToken('user_token')->accessToken;
-
             return response()->json ([
                 'user' => $user,
                 'message' => 'Successfully logged in. Ready to play! ',
@@ -155,7 +130,7 @@ class UserController extends Controller
         } 
 
     }
-    //update nombre de usuario registrado
+    //update usuario registrado
     public function update(Request $request, $id) {
 
         $user = User::find($id);
@@ -238,29 +213,27 @@ class UserController extends Controller
         ], 200);
       }
 
-      //listado con todas las tiradas con los resultados y su tasa de éxito
-    
-
+    //listado de todos los juagdores del sistema
     public function list_players(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_all_players')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_all_players')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
         }
-
+        //todos los jugadores (con o sin partida)
         $players = User::where('role_id', '2')->get();
 
         $players_list = [];
 
         foreach ($players as $player) {
 
-        $player = [
-            'nickname' => $player->nickname,
-            'rate' => $player->calculate_rates($player->id),
-        ];
+            $player = [
+                'nickname' => $player->nickname,
+                'rate' => $player->calculate_rates($player->id),
+            ];
 
-            $players_list[] = $player;
+                $players_list[] = $player;
         };  
 
         return response()->json([
@@ -271,14 +244,13 @@ class UserController extends Controller
 
     public function ranking_players(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_ranking')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_ranking')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
         }
         
         //método para conseguir todos los jugadores
-
         $user = new User;
         $gamers_list = $user->get_players();
         
@@ -313,7 +285,7 @@ class UserController extends Controller
 
     public function ranking_winner(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_winner')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_winner')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -335,7 +307,7 @@ class UserController extends Controller
 
     public function ranking_loser(Request $request){
 
-        if($request->user()->role->name != 'admin' && !$request->user()->tokenCan('list_loser')) {
+        if($request->user()->role->name !== 'admin' && !$request->user()->tokenCan('list_loser')) {
             return response()->json([
                 'error' => 'Hey, you are not allowed! :('
             ], 403);
@@ -343,8 +315,6 @@ class UserController extends Controller
 
         $user = new User;
         $losers_list = $user->get_players();
-
-        //return $players_list;
 
         usort($losers_list, function ($a, $b) {
             return $a['rate'] <=> $b['rate'];
