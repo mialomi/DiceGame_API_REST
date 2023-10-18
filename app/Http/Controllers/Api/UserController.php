@@ -216,8 +216,13 @@ class UserController extends Controller
     
     }
 
-    public function logout() {
-        
+    public function logout(Request $request) {
+
+        if($request->user()->role->name !== 'player' && !$request->user()->tokenCan('logout')) {
+            return response()->json([
+                'error' => 'Hey, you are not allowed! :('
+            ], 403);
+        }
             /** @var \App\Models\User $user **/
           $user = Auth::user();
   
@@ -254,9 +259,10 @@ class UserController extends Controller
             $players_list[] = $player;
         };  
 
-        return $players_list;
+        return response()->json([
+            $players_list,
 
-       
+        ]);
     }
 
     public function ranking_players(Request $request){
