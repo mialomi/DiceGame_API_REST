@@ -86,7 +86,7 @@ class GameController extends Controller
             }
             if($request->user()->id !== $user->id) {
                 return response()->json([
-                    'error' => 'Hey, you are not allowed to play here! :('
+                    'error' => 'Hey, you are not allowed to see this! :('
                 
                 ], 403);
             }
@@ -95,7 +95,7 @@ class GameController extends Controller
               
                 return response()->json([
                     
-                    'error' => 'Hey, you are not allowed! :('
+                    'error' => 'Hey, you are not allowed to see this! :('
                 
                 ], 403);
             }

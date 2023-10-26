@@ -13,26 +13,8 @@ class UsersSeederTable extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-
-            ['nickname' => 'admin',
-            'email' => 'admin@gmail.com',
-            'password' => 'admin123456',
-            'role_id' => '1',
-            ],
-
-            ['nickname' => 'Eli',
-            'email' => 'eli@gmail.com',
-            'password' => '123456789',
-            'role_id' => '2',
-            ],
-
-            ['nickname' => 'Mia',
-            'email' => 'mia@gmail.com',
-            'password' => '123456789',
-            'role_id' => '2',
-            ]
+      //
   
-        ]);
+    
     }
 }
