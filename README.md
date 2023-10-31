@@ -4,7 +4,7 @@
 This is a REST API for a dice game application developed with Laravel PHP.
 
 ## Game Description
-The game consists of rolling two dice and winning the round if the sum of the two dice is equal to 7.
+🎲 The game consists of rolling two dice and winning the round if the sum of the two dice is equal to 7.
 
 **Players can:**
 - Dice rolls.
